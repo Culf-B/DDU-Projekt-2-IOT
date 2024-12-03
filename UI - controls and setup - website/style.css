@@ -1,0 +1,90 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+/* Header */
+header {
+    background-color: #007b55;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+/* Navigation Bar */
+nav {
+    background-color: #004d40;
+    padding: 0.5rem;
+    text-align: center;
+}
+
+nav a {
+    color: white;
+    margin: 0 1rem;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+/* Main Layout */
+main {
+    display: flex;
+    margin: 2rem;
+}
+
+/* Menu */
+.menu {
+    flex: 1;
+    background-color: #007b55;
+    padding: 1rem;
+    border-radius: 8px;
+    color: white;
+    margin-right: 1rem;
+}
+
+.menu ul {
+    list-style-type: none;
+}
+
+.menu li {
+    margin: 0.5rem 0;
+}
+
+.menu a {
+    color: white;
+    text-decoration: none;
+}
+
+.menu a:hover {
+    text-decoration: underline;
+}
+
+/* Content Box */
+.content-box {
+    flex: 3;
+    background-color: #e0f7fa;
+    border: 2px solid #004d40;
+    border-radius: 8px;
+    padding: 2rem;
+}
+
+/* Footer */
+footer {
+    background-color: #004d40;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    margin-top: 2rem;
+}
