@@ -47,6 +47,7 @@ def refineData():
         
 
 def ReadData():
+    global NPKdict
     with open("C:/Users/Privat/OneDrive/Desktop/Repos/ProgRepo/DDU-Projekt-2-IOT/Visual_data/Dictionary.json", "r", encoding = "utf-8") as load_NPKdict:
         NPKdict = json.load(load_NPKdict)
 
@@ -59,6 +60,5 @@ def SaveData():
     with open("C:/Users/Privat/OneDrive/Desktop/Repos/ProgRepo/DDU-Projekt-2-IOT/Visual_data/Dictionary.json", "w", encoding="utf-8") as save_data:
         save_data.write(json_object)
 
-refineData()
-SaveData()
 ReadData()
+refineData()

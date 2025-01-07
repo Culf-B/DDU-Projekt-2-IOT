@@ -1,12 +1,19 @@
 #include <SoftwareSerial.h>
 #include <ArduinoJson.h>
 
-#define ARRAY_SIZE 100
+#define ARRAY_SIZE 10
 
+/*
 const byte rxPin = 4;
 const byte txPin = 3;
 const byte enPin = 7;
-
+*/
+int NArr[ARRAY_SIZE] = {12, 14, 16, 18, 20, 22, 24, 26, 28, 30};
+int PArr[ARRAY_SIZE] = {10, 12, 14, 16, 18, 20, 22, 24, 26, 28};
+int KArr[ARRAY_SIZE] = {5, 7, 9, 11, 13, 15, 17, 19, 21, 23};
+int AArr[ARRAY_SIZE] = {192, 193, 194, 195, 196, 197, 198, 199, 200, 201};
+int RArr[ARRAY_SIZE] = {9600, 9600, 9600, 9600, 9600, 9600, 9600, 9600, 9600, 9600};
+/*
 SoftwareSerial mySerial(rxPin, txPin);
 
 uint8_t ComN[8] = {0x01, 0x03, 0x00, 0x1E, 0x00, 0x01, 0xE4, 0x0C};   // N Command
@@ -14,63 +21,46 @@ uint8_t ComP[8] = {0x01, 0x03, 0x00, 0x1F, 0x00, 0x01, 0xB5, 0xCC};   // P Comma
 uint8_t ComK[8] = {0x01, 0x03, 0x00, 0x20, 0x00, 0x01, 0x85, 0xC0};   // K Command
 uint8_t ComA[8] = {0x01, 0x03, 0x07, 0xD0, 0x00, 0x01, 0x84, 0x87};   // Address
 uint8_t ComR[8] = {0x01, 0x03, 0x07, 0xD1, 0x00, 0x01, 0xD5, 0x47};   // Baud rate (0 -> 2400, 1 -> 4800, 2 -> 9600)
-
-void setup() {
+*/
+void setup() 
+{
+  /*
     pinMode(enPin, OUTPUT);
     digitalWrite(enPin, LOW);
-
+*/
     Serial.begin(9600);    // Debug serial
-    mySerial.begin(9600);  // RS485 communication
+    while (!Serial) {} // Vent til serial-forbindelsen er klar
+    //mySerial.begin(9600);  // RS485 communication
 }
 
-void loop() {
-    if (index < ARRAY_SIZE) {
-        int N = readSensorValue(ComN, "N");
-        int P = readSensorValue(ComP, "P");
-        int K = readSensorValue(ComK, "K");
-        int A = readSensorValue(ComA, "A");
-        int R = readSensorValue(ComR, "R");
+void loop() 
+{
+    StaticJsonDocument<1024> doc;
 
-        if (N != -1) {
-            NArr[index] = N;
-        } else {
-            Serial.println("Failed to read N value");
-        }
+    JsonArray N = doc.createNestedArray("N");
+    JsonArray P = doc.createNestedArray("P");
+    JsonArray K = doc.createNestedArray("K");
+    JsonArray A = doc.createNestedArray("A");
+    JsonArray R = doc.createNestedArray("R");
 
-        if (P != -1) {
-            PArr[index] = P;
-        } else {
-            Serial.println("Failed to read P value");
-        }
-
-        if (K != -1) {
-            KArr[index] = K;
-        } else {
-            Serial.println("Failed to read K value");
-        }
-
-        if (A != -1) {
-            AArr[index] = A;
-        } else {
-            Serial.println("Failed to read A value");
-        }
-
-        if (R != -1) {
-            RArr[index] = R;
-        } else {
-            Serial.println("Failed to read R value");
-        }
-
-        index++;
-    } else {
-        Serial.println("Array size reached. Stopping data collection.");
-        while (true); // Stopper programmet
+    // Tilføj data fra arraysne
+    for (int i = 0; i < ARRAY_SIZE; i++) 
+    {
+      N.add(NArr[i]);
+      P.add(PArr[i]);
+      K.add(KArr[i]);
+      A.add(AArr[i]);
+      R.add(RArr[i]);
     }
 
-    delay(1000);
+    // Serialiser JSON til Serial Monitor eller Python
+    serializeJson(doc, Serial);
+    Serial.println(); // Tilføj en ny linje for at markere slutningen af JSON
+
+    delay(500); // Send data hver 5. sekund
 }
 
-void saveJsonToFile() 
+/*void saveJsonToFile() 
 {
   StaticJsonDocument<1024> jsonDoc; // Dokument med plads til 1024 bytes
   jsonDoc["N"] = NArr;
@@ -169,4 +159,6 @@ unsigned int CRC16_2(unsigned char *buf, int len) {
         }
     }
     return crc;
-}
+}*/
+
+saveJsonToFile();
