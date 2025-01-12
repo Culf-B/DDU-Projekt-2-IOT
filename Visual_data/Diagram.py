@@ -4,10 +4,12 @@ import math
 import matplotlib.pyplot as plt
 import json
 import serial
+from os import path
 
 SERIAL_PORT = "COM9"  # Skift til den korrekte port for din Arduino
 BAUD_RATE = 9600
-FILE_PATH = "C:/Users/Privat/OneDrive/Desktop/Repos/ProgRepo/DDU-Projekt-2-IOT/Visual_data/Dictionary.json"
+PATH_TO_HERE = path.dirname(path.abspath(__file__))
+FILE_PATH = path.join(PATH_TO_HERE, "Dictionary.json")
 
 def read_json_from_serial():
     try:
