@@ -22,31 +22,41 @@ header {
 
 /* Navigation Bar */
 nav {
+    display: flex;
     background-color: #004d40;
-    padding: 0.5rem;
-    text-align: center;
+    justify-content: center;
 }
 
-nav a {
+nav div {
+    text-align: center;
+    padding: 0.5rem;
+}
+
+nav div a {
     color: white;
     margin: 0 1rem;
     text-decoration: none;
     font-weight: bold;
 }
 
-nav a:hover {
+nav div a:hover {
     text-decoration: underline;
+}
+
+.selected {
+    background-color: #007b55;
 }
 
 /* Main Layout */
 main {
     display: flex;
     margin: 2rem;
+    height: calc(100vh - 10rem);
 }
 
 /* Menu */
 .menu {
-    flex: 1;
+    flex: 0 0 200px;
     background-color: #007b55;
     padding: 1rem;
     border-radius: 8px;
@@ -73,11 +83,19 @@ main {
 
 /* Content Box */
 .content-box {
-    flex: 3;
+    flex: 1;
     background-color: #e0f7fa;
     border: 2px solid #004d40;
     border-radius: 8px;
-    padding: 2rem;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#map {
+    flex: 1;
+    height: 100%;
 }
 
 /* Footer */
