@@ -3,6 +3,8 @@ from os import path
 
 PATH_TO_HERE = path.dirname(path.abspath(__file__))
 FILE_PATH = path.join(PATH_TO_HERE, "Dictionary.json")
+labels = []
+sizes = []
 
 def RefineData():
     for key, values in NPKdict.items():
