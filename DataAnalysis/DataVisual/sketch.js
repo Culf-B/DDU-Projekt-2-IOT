@@ -115,15 +115,12 @@ class Barchart
     this.dict = dict;
     this.labels = Object.keys(dict);
     this.sizes = this.calculateSizes();
-    this.recommended = recommended;
+    this.recommended = recommended; // Recommended amounts in mg/kg
   }
 
-  convertMgKgToKgHectar()
+  convertMgKgToKgHectar(mgKgValue) 
   {
-    for (let i = 0; i < this.sizes.length; i++) 
-    {
-      let avgValue = ((this.sizes[i]) * 10000 * 25);
-    }
+    return (mgKgValue * 10000 * 25) / 1000000;
   }
 
   calculateSizes() 
@@ -133,7 +130,11 @@ class Barchart
     {
       let values = this.dict[key];
       let avg = values.reduce((a, b) => a + b, 0) / values.length;
-      sizes.push(avg);
+      
+      // Convert mg/kg to kg/hectar
+      let avgInKgHectar = this.convertMgKgToKgHectar(avg);
+      
+      sizes.push(avgInKgHectar);
     }
     return sizes;
   }
@@ -157,11 +158,11 @@ class Barchart
       rect(i * barWidth, height - avgBarHeight, barWidth - 10, avgBarHeight);
 
       fill(150, 200, 100, 150);
-      rect(i * barWidth, height - recMaxHeight, barWidth - 10, recMaxHeight - recMinHeight);
+      rect(i * barWidth, height - recMaxHeight, barWidth - 10, recMaxHeight - recMinHeight);  // Corrected range bar from min to max
 
       stroke(255, 0, 0);
       strokeWeight(2);
-      line(i * barWidth, height - recMinHeight, i * barWidth + barWidth - 10, height - recMinHeight);
+      line(i * barWidth, height - recMinHeight, i * barWidth + barWidth - 10, height - recMinHeight);  // Recommended minimum line
 
       noStroke();
       fill(0);
@@ -170,13 +171,9 @@ class Barchart
       text(this.labels[i], i * barWidth + barWidth / 2, height - 5);
 
       textSize(10);
-      text(`${avgValue.toFixed(1)} mg/kg`, i * barWidth + barWidth / 2, height - avgBarHeight - 10);
+      text(`${avgValue.toFixed(1)} kg/ha`, i * barWidth + barWidth / 2, height - avgBarHeight - 10);
       text(`${recommendedMin.toFixed(1)} kg/ha`, i * barWidth + barWidth / 2, height - recMinHeight - 10);
       text(`${recommendedMax.toFixed(1)} kg/ha`, i * barWidth + barWidth / 2, height - recMaxHeight - 10);
     }
   }
 }
-
-
-
-
