@@ -32,16 +32,36 @@
 
         <main>
             <aside class="menu">
+                <h2>Opsætning</h2>
                 <ul>
-                    <li><a href="#">Menu Item 1</a></li>
-                    <li><a href="#">Menu Item 2</a></li>
-                    <li><a href="#">Menu Item 3</a></li>
+                    <li>
+                        <div>
+                            <h3>Mark afgrænsning</h3>
+                            <span>Status: </span><span id = "borderStatus">mangler</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <h3>Base</h3>
+                            <span>Status: </span><span id = "baseStatus">mangler</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <h3>Målinger</h3>
+                            <span>X-aksen: </span><input min = "1" max = "100" value = "10" type = "range" id = "meassureX">
+                            <span>Y-aksen: </span><input min = "1" max = "100" value = "10" type = "range" id = "meassureY">
+                            <button onclick="meassurementSetup()">Tilføj til kortet</button>
+                        </div>
+                    </li>
                 </ul>
             </aside>
             <section class="content-box" id="map"></section>
             <script>
                 // Initialiser kortet
-                const map = L.map('map').setView([55.6761, 12.5683], 8); // Start i København
+                const map = L.map('map').setView([55.83059683573784, 10.584849312789252], 7);
+                var meassureMarkersLayer = new L.FeatureGroup();
+                meassureMarkersLayer = meassureMarkersLayer.addTo(map);
 
                 // Tilføj Mapbox Satellit Tiles
                 const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -49,7 +69,6 @@
                     maxZoom: 19, // Begræns til ESRI's maksimale understøttede zoomniveau
                     minZoom: 1 // Undgå for lave zoomniveauer
                 }).addTo(map);
-
 
                 // Opret en gruppe til tegnede elementer
                 const drawnItems = new L.FeatureGroup();
@@ -61,17 +80,23 @@
                         rectangle: false,
                         circle: false,
                         polyline: false,
-                        marker: false,
-                        circlemarker: false, // Fjern muligheden for CircleMarker
-                        polygon: {
-                            allowIntersection: false, // Forbyd overlap af linjer
+                        marker: {
                             shapeOptions: {
                                 color: 'blue'
+                            }
+                        },
+                        circlemarker: false,
+                        polygon: {
+                            allowIntersection: false,
+                            shapeOptions: {
+                                color: 'orange'
                             }
                         }
                     },
                     edit: {
-                        featureGroup: drawnItems
+                        featureGroup: drawnItems,
+                        edit: true, // Enable editing of existing layers
+                        remove: true // Enable removal of layers
                     }
                 });
                 map.addControl(drawControl);
@@ -82,20 +107,91 @@
                     drawnItems.addLayer(layer);
 
                     if (event.layerType === 'polygon') {
-                        const coordinates = layer.getLatLngs()[0]; // Hent polygonens punkter
-                        console.log('Polygon punkter:', coordinates.map(coord => [coord.lat, coord.lng]));
 
-                        // Vis koordinaterne på kortet som popup (valgfrit)
-                        const popupContent = coordinates.map(coord => `${coord.lat}, ${coord.lng}`).join('<br>');
-                        layer.bindPopup(`Koordinater:<br>${popupContent}`).openPopup();
+                        // Remove all other polygons
+                        drawnItems.eachLayer(function(existingLayer) {
+                            if (existingLayer instanceof L.Polygon) {
+                                drawnItems.removeLayer(existingLayer); // Remove the polygon
+                            }
+                            layer.editing.enable();
+
+                            // Listen for changes to the layer
+                            layer.on('edit', function(e) {
+                                updateUI();
+                            });
+
+                        });
+
+                        // Add the new polygon to the drawnItems
+                        drawnItems.addLayer(layer);
+
+                        const coordinates = layer.getLatLngs()[0]; // Hent polygonens punkter
+                        console.log('Mark afgrænsningspunkter:', coordinates.map(coord => [coord.lat, coord.lng]));
+
+                    } else if (event.layerType === 'marker') {
+                        // Remove all other markers
+                        drawnItems.eachLayer(function(existingLayer) {
+                            if (existingLayer instanceof L.Marker) {
+                                drawnItems.removeLayer(existingLayer); // Remove the marker
+                            }
+                        });
+
+                        // Add the new marker to the drawnItems
+                        drawnItems.addLayer(layer);
+
+                        const markerPosition = layer.getLatLng();
+                        console.log('Marker position:', markerPosition.lat, markerPosition.lng);
                     }
+                    updateUI();
                 });
+
+                // Listen for when a layer is added to drawnItems
+                drawnItems.on('layeradd', function(event) {
+                    updateUI();
+                });
+
+                // Listen for when a layer is removed from drawnItems
+                drawnItems.on('layerremove', function(event) {
+                    updateUI();
+                });
+
+                function updateUI() {
+                    baseDefined = false;
+                    borderDefined = false;
+                    drawnItems.eachLayer(function(existingLayer) {
+                        if (existingLayer instanceof L.Polygon) {
+                            borderDefined = true;
+                        }
+                        if (existingLayer instanceof L.Marker) {
+                            baseDefined = true;
+                        }
+                    });
+                    if (borderDefined == true) {
+                        borderText = "Klar";
+                    } else {
+                        borderText = "Mangler";
+                    }
+                    if (baseDefined == true) {
+                        baseText = "Klar";
+                    } else {
+                        baseText = "Mangler";
+                    }
+                    document.getElementById("borderStatus").innerHTML = borderText;
+                    document.getElementById("baseStatus").innerHTML = baseText;
+
+                    // Check if all inputs are inputted
+                    if (baseDefined && borderDefined) {
+                        return true
+                    } else {
+                        return false
+                    }
+                }
             </script>
         </main>
 
         <footer>
             <p>© 2024 MarkBot. All rights reserved.</p>
         </footer>
-        <script src="" async defer></script>
+        <script src="meassureLocationsCalc.js"></script>
     </body>
 </html>
